@@ -1,0 +1,81 @@
+# https://github.com/mendhak/docker-http-https-echo
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: http-echo
+  name: http-echo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-echo
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: http-echo
+    spec:
+      containers:
+      - image: docker.io/mendhak/http-https-echo:33
+        name: http-https-echo
+        resources: {}
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-echo
+spec:
+  selector:
+    app: http-echo
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: http-echo
+spec:
+  gateways:
+  - bookinfo-gateway
+  hosts:
+  - '*'
+  http:
+  - name: "oauth2-route"
+    match:
+    - uri:
+        prefix: /oauth
+    route:
+    - destination:
+        host: http-echo
+        port:
+          number: 8080
+  - name: "re-write route"
+    match:
+    - uri:
+        prefix: /
+    rewrite:
+      uri: "/rewrote"
+    route:
+    - destination:
+        host: http-echo
+        port:
+          number: 8080
+  - name: "default route"
+    route:
+    - destination:
+        host: http-echo
+        port:
+          number: 8080
