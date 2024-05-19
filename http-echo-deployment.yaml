@@ -67,15 +67,15 @@ spec:
     - uri:
         prefix: /
     rewrite:
-      uri: "/rewrote"
+      uri: "/rewrote/"
     route:
     - destination:
         host: http-echo
         port:
           number: 8080
-  - name: "default route"
-    route:
-    - destination:
-        host: http-echo
-        port:
-          number: 8080
+  # - name: "default route"
+  #   route:
+  #   - destination:
+  #       host: http-echo
+  #       port:
+  #         number: 8080
