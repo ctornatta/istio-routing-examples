@@ -47,35 +47,30 @@ apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: http-echo
-spec:
+  namespace: default
+ pec:
   gateways:
   - bookinfo-gateway
   hosts:
-  - '*'
+  - http-echo.localdomain
   http:
-  - name: "oauth2-route"
-    match:
+  - match:
     - uri:
         prefix: /oauth
+    name: oauth2-route
     route:
     - destination:
         host: http-echo
         port:
           number: 8080
-  - name: "re-write route"
-    match:
+  - match:
     - uri:
         prefix: /
+    name: re-write route
     rewrite:
-      uri: "/rewrote/"
+      uri: /rewrote/
     route:
     - destination:
         host: http-echo
         port:
           number: 8080
-  # - name: "default route"
-  #   route:
-  #   - destination:
-  #       host: http-echo
-  #       port:
-  #         number: 8080
