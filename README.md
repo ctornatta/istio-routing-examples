@@ -1,6 +1,6 @@
 # mesh-http-rewrite-test
 
-Setup your `/etc/hosts` file like so
+Setup your `/etc/hosts` file like so:
 
 ```
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 http-echo.localdomain nginx.localdomain nginx-a.localdomain nginx-b.localdomain
