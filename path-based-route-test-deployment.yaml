@@ -173,7 +173,60 @@ spec:
     - match:
         - uri:
             prefix: /
+
       name: nginx-b-route
+      route:
+        - destination:
+            host: nginx-b
+            port:
+              number: 80
+
+---
+
+# path based route for A, two virtual services with same hosts and one gateway
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-path-a
+  namespace: default
+spec:
+  gateways:
+    - bookinfo-gateway
+  hosts:
+    - nginx.localdomain
+  http:
+    - match:
+        - uri:
+            prefix: /a
+      name: nginx-path-a-route
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: nginx-a
+            port:
+              number: 80
+
+---
+
+# path based route for A, two virtual services with same hosts and one gateway
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-path-b
+  namespace: default
+spec:
+  gateways:
+    - bookinfo-gateway
+  hosts:
+    - nginx.localdomain
+  http:
+    - match:
+        - uri:
+            prefix: /b
+      name: nginx-path-b-route
+      rewrite:
+        uri: /
       route:
         - destination:
             host: nginx-b
