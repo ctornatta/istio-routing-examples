@@ -2,6 +2,12 @@
 
 This repo demostrates several routing options for a site within a istio service mesh.
 
+
+* URL rewriting
+* routing based off of host
+* route sharing same host but different path
+
+
 # Setup
 
 Setup your `/etc/hosts` file like so:
