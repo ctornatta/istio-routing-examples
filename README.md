@@ -1,6 +1,14 @@
 # mesh-http-rewrite-test
-Testing on URL rewriting in service mesh
 
+Setup your `/etc/hosts` file like so
+
+```
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 http-echo.localdomain nginx.localdomain nginx-a.localdomain nginx-b.localdomain
+```
+
+
+
+http://http-echo.localdomain:8080/sdfsd
 
 http://nginx-a.localdomain:8080/
 http://nginx-b.localdomain:8080/
