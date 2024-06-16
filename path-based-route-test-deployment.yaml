@@ -143,7 +143,7 @@ metadata:
   namespace: default
 spec:
   gateways:
-    - bookinfo-gateway
+    - default/istio-gateway
   hosts:
     - nginx-a.localdomain
   http:
@@ -166,7 +166,7 @@ metadata:
   namespace: default
 spec:
   gateways:
-    - bookinfo-gateway
+    - default/istio-gateway
   hosts:
     - nginx-b.localdomain
   http:
@@ -191,7 +191,7 @@ metadata:
   namespace: default
 spec:
   gateways:
-    - bookinfo-gateway
+    - default/istio-gateway
   hosts:
     - nginx.localdomain
   http:
@@ -217,7 +217,7 @@ metadata:
   namespace: default
 spec:
   gateways:
-    - bookinfo-gateway
+    - default/istio-gateway
   hosts:
     - nginx.localdomain
   http:
