@@ -1,0 +1,181 @@
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content-a
+  namespace: default
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Welcome to Nginx</title>
+    </head>
+    <body>
+        <h1>Hello, Kubernetes!</h1>
+        <p>This content is served from a ConfigMap A.</p>
+    </body>
+    </html>
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content-b
+  namespace: default
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Welcome to Nginx</title>
+    </head>
+    <body>
+        <h1>Hello, Kubernetes!</h1>
+        <p>This content is served from a ConfigMap B.</p>
+    </body>
+    </html>
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-a
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-a
+  template:
+    metadata:
+      labels:
+        app: nginx-a
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: web-content-volume
+          configMap:
+            name: web-content-a
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-b
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-b
+  template:
+    metadata:
+      labels:
+        app: nginx-b
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: web-content-volume
+          configMap:
+            name: web-content-b
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-a
+  namespace: default
+spec:
+  selector:
+    app: nginx-a
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-b
+  namespace: default
+spec:
+  selector:
+    app: nginx-b
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-a
+  namespace: default
+spec:
+  gateways:
+    - bookinfo-gateway
+  hosts:
+    - nginx-a.localdomain
+  http:
+    - match:
+        - uri:
+            prefix: /
+      name: nginx-a-route
+      route:
+        - destination:
+            host: nginx-a
+            port:
+              number: 80
+
+---
+
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-b
+  namespace: default
+spec:
+  gateways:
+    - bookinfo-gateway
+  hosts:
+    - nginx-b.localdomain
+  http:
+    - match:
+        - uri:
+            prefix: /
+      name: nginx-b-route
+      route:
+        - destination:
+            host: nginx-b
+            port:
+              number: 80
