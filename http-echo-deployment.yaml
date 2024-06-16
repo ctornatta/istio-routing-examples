@@ -48,9 +48,9 @@ kind: VirtualService
 metadata:
   name: http-echo
   namespace: default
- pec:
+spec:
   gateways:
-  - bookinfo-gateway
+  - default/istio-gateway
   hosts:
   - http-echo.localdomain
   http:
