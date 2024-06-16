@@ -1,5 +1,9 @@
 # mesh-http-rewrite-test
 
+This repo demostrates several routing options for a site within a istio service mesh.
+
+# Setup
+
 Setup your `/etc/hosts` file like so:
 
 ```
@@ -7,6 +11,7 @@ Setup your `/etc/hosts` file like so:
 ```
 
 
+# URLs
 
 http://http-echo.localdomain:8080/sdfsd
 
