@@ -21,7 +21,7 @@ Setup your `/etc/hosts` file like so:
 
 http://http-echo.localdomain:8080/sdfsd
 
-http://nginx-a.localdomain:8080/
-http://nginx-b.localdomain:8080/
-http://nginx.localdomain:8080/a/
-http://nginx.localdomain:8080/b/
+http://nginx-a.localdomain:8080/  
+http://nginx-b.localdomain:8080/  
+http://nginx.localdomain:8080/a/  
+http://nginx.localdomain:8080/b/  
