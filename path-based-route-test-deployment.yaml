@@ -136,6 +136,7 @@ spec:
 
 ---
 
+# path based route for A, same gateway but different host.
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -159,6 +160,7 @@ spec:
 
 ---
 
+# path based route for B, same gateway but different host.
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -183,7 +185,7 @@ spec:
 
 ---
 
-# path based route for A, two virtual services with same hosts and one gateway
+# path based route for A, two virtual services with same host and gateway
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
@@ -209,7 +211,7 @@ spec:
 
 ---
 
-# path based route for A, two virtual services with same hosts and one gateway
+# path based route for B, two virtual services with same host and gateway
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
