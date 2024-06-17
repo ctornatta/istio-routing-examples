@@ -1,4 +1,4 @@
-# mesh-http-rewrite-test
+# Istio Routing Examples
 
 This repo demostrates several routing options for a site within a istio service mesh.
 
