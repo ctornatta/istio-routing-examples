@@ -1,0 +1,228 @@
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webapp-main-route
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webapp-c
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webapp-d
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content
+  namespace: webapp-c
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Welcome to Nginx</title>
+    </head>
+    <body>
+        <h1>Hello, Kubernetes!</h1>
+        <p>This content is served from a ConfigMap C.</p>
+    </body>
+    </html>
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content
+  namespace: webapp-d
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Welcome to Nginx</title>
+    </head>
+    <body>
+        <h1>Hello, Kubernetes!</h1>
+        <p>This content is served from a ConfigMap D.</p>
+    </body>
+    </html>
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: webapp-c
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: web-content-volume
+          configMap:
+            name: web-content
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-d
+  namespace: webapp-d
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: web-content-volume
+          configMap:
+            name: web-content
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: webapp-c
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: webapp-d
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-main-vs
+  namespace: webapp-main-route
+spec:
+  gateways:
+    - default/istio-gateway
+  hosts:
+    - nginx.localdomain
+  http:
+    - match:
+        - uri:
+            prefix: /c
+      delegate:
+        name: nginx-vs
+        namespace: webapp-c
+    - match:
+        - uri:
+            prefix: /d
+      delegate:
+        name: nginx-vs
+        namespace: webapp-d            
+
+
+---
+
+# path based route for A, two virtual services with same host and gateway
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-vs
+  namespace: webapp-c
+spec:
+  http:
+    - match:
+        - uri:
+            prefix: /c
+      name: nginx-path-route
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: nginx
+            port:
+              number: 80
+
+---
+
+# path based route for B, two virtual services with same host and gateway
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: nginx-vs
+  namespace: webapp-d
+spec:
+  http:
+    - match:
+        - uri:
+            prefix: /d
+      name: nginx-path-route
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: nginx
+            port:
+              number: 80
